@@ -31,3 +31,6 @@ graphify-out
 .vercel
 .env*.local
 .taste-skill
+
+.vercel
+.env*
