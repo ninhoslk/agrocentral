@@ -95,3 +95,10 @@ test('celular: marketplace acessível pela barra inferior, com anúncios demonst
   await page.getByRole('link', { name: 'Marketplace' }).first().tap()
   await expect(page).toHaveURL(/\/marketplace$/)
 })
+
+test('celular: entrar só com o nome de usuário (conta de teste)', async ({ page }) => {
+  test.skip(!process.env.E2E_USER_C_LOGIN, 'sem E2E_USER_C_LOGIN')
+  await login(page, { email: process.env.E2E_USER_C_LOGIN!, password: process.env.E2E_USER_C_PASSWORD! })
+  await expect(page.getByRole('combobox', { name: 'Propriedade selecionada' })).toBeVisible()
+  await page.screenshot({ path: 'test-results/mobile/login-usuario.png' })
+})

@@ -46,14 +46,21 @@ export function AuthShell({ title, subtitle, children, footer }: { title: string
   )
 }
 
-const loginSchema = z.object({ email: z.string().trim().email('E-mail inválido'), password: z.string().min(1, 'Informe a senha') })
+/** Contas de teste/demonstração podem entrar só com o usuário (ex.: "contateste" → contateste@agrocentral.test) */
+const USERNAME_DOMAIN = 'agrocentral.test'
+const loginSchema = z.object({
+  email: z.string().trim().toLowerCase().min(1, 'Informe o e-mail ou usuário')
+    .transform((v) => (v.includes('@') ? v : `${v}@${USERNAME_DOMAIN}`))
+    .pipe(z.string().email('E-mail ou usuário inválido')),
+  password: z.string().min(1, 'Informe a senha'),
+})
 
 export function LoginPage() {
   const { session } = useAuth()
   const navigate = useNavigate()
   const loc = useLocation()
   const from = (loc.state as { from?: string } | null)?.from ?? '/'
-  const form = useForm<z.infer<typeof loginSchema>>({ resolver: zodResolver(loginSchema) })
+  const form = useForm<z.input<typeof loginSchema>, unknown, z.output<typeof loginSchema>>({ resolver: zodResolver(loginSchema) })
   if (session) return <Navigate to={from} replace />
   const onSubmit = form.handleSubmit(async (v) => {
     const { error } = await supabase.auth.signInWithPassword({ email: v.email, password: v.password })
@@ -64,8 +71,8 @@ export function LoginPage() {
     <AuthShell title="Entrar" subtitle="Acesse sua conta AgroCentral."
       footer={<>Não tem conta? <Link className="font-medium text-brand-700 underline" to="/cadastro">Criar conta</Link></>}>
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
-        <FieldWrap label="E-mail" htmlFor="email" error={form.formState.errors.email?.message}>
-          <Input id="email" type="email" autoComplete="email" {...form.register('email')} aria-invalid={!!form.formState.errors.email} />
+        <FieldWrap label="E-mail ou usuário" htmlFor="email" error={form.formState.errors.email?.message}>
+          <Input id="email" type="text" inputMode="email" autoCapitalize="none" autoCorrect="off" spellCheck={false} autoComplete="username" {...form.register('email')} aria-invalid={!!form.formState.errors.email} />
         </FieldWrap>
         <FieldWrap label="Senha" htmlFor="password" error={form.formState.errors.password?.message}>
           <Input id="password" type="password" autoComplete="current-password" {...form.register('password')} aria-invalid={!!form.formState.errors.password} />
