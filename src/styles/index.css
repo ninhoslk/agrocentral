@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --color-brand-50: #f0f7f1;
+  --color-brand-100: #dcecdf;
+  --color-brand-200: #b9d9c0;
+  --color-brand-300: #8bbf98;
+  --color-brand-400: #5b9f6d;
+  --color-brand-500: #3b8250;
+  --color-brand-600: #2a6840;
+  --color-brand-700: #215335;
+  --color-brand-800: #1b432c;
+  --color-brand-900: #14532d;
+  --color-brand-950: #0b2a17;
+  --color-soil-500: #8a6a43;
+  --color-wheat-400: #d9b44a;
+  --color-surface: #f6f7f4;
+  --color-ink: #1c2420;
+  --color-muted: #5f6b64;
+  --color-line: #e2e6e1;
+  --color-ok: #1f7a3d;
+  --color-warn: #b45309;
+  --color-danger: #b42318;
+  --color-info: #175cd3;
+}
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+  html, body { overflow-x: clip; }
+  body { overscroll-behavior-y: none; }
+  body {
+    @apply bg-surface text-ink font-sans antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+  :focus-visible { @apply outline-2 outline-offset-2 outline-brand-500; }
+  h1, h2, h3 { @apply tracking-tight; }
+  input[type="number"]::-webkit-inner-spin-button { opacity: 0.4; }
+}
+
+@layer components {
+  .tabular { font-variant-numeric: tabular-nums; }
+  .card { @apply rounded-xl border border-line bg-white; }
+  .scrollbar-thin { scrollbar-width: thin; }
+}
+
+/* Leaflet */
+.leaflet-container { font: inherit; border-radius: 0.75rem; isolation: isolate; z-index: 0; }
+.leaflet-control-attribution { font-size: 10px; }
+@media (max-width: 640px) {
+  .leaflet-touch .leaflet-bar a { width: 40px; height: 40px; line-height: 40px; font-size: 20px; }
+  .leaflet-touch .leaflet-control-layers-toggle { width: 44px; height: 44px; }
+}
+
+@media print {
+  aside, header, .no-print { display: none !important; }
+  main { padding: 0 !important; }
+  body { background: white; }
+}
