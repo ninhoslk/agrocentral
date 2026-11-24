@@ -1,6 +1,7 @@
 import { expect, test, devices } from '@playwright/test'
 
 const A = { email: process.env.E2E_USER_A_EMAIL!, password: process.env.E2E_USER_A_PASSWORD! }
+const B = { email: process.env.E2E_USER_B_EMAIL!, password: process.env.E2E_USER_B_PASSWORD! }
 
 test.use({ ...devices['iPhone 13'], browserName: 'chromium' })
 
@@ -11,15 +12,16 @@ const ROUTES = [
   '/configuracoes/organizacao', '/configuracoes/usuarios', '/configuracoes/alertas',
 ]
 
-async function login(page: import('@playwright/test').Page) {
+async function login(page: import('@playwright/test').Page, u = A) {
   await page.goto('/entrar')
-  await page.getByLabel('E-mail').fill(A.email)
-  await page.getByLabel('Senha').fill(A.password)
+  await page.getByLabel('E-mail').fill(u.email)
+  await page.getByLabel('Senha').fill(u.password)
   await page.getByRole('button', { name: 'Entrar' }).tap()
   await expect(page.getByRole('navigation', { name: 'Navegação rápida' })).toBeVisible()
 }
 
 test('celular: todas as páginas sem rolagem lateral, com navegação inferior e alvos de toque', async ({ page }) => {
+  test.setTimeout(180_000)
   const errors: string[] = []
   page.on('pageerror', (e) => errors.push(`${page.url()}: ${e.message}`))
   await login(page)
@@ -61,10 +63,35 @@ test('celular: menu inferior, ações rápidas e menu completo funcionam por toq
   await page.getByLabel('Título').fill('Tarefa pelo celular')
   await page.getByRole('button', { name: 'Salvar' }).tap()
   await expect(page.getByText('Tarefa pelo celular').first()).toBeVisible()
+  await expect(page.getByRole('dialog')).toBeHidden()
   await page.getByRole('button', { name: 'Menu' }).tap()
-  await page.getByRole('link', { name: 'Estoque' }).tap()
+  await expect(page.getByRole('dialog', { name: 'Menu' })).toBeVisible()
+  await page.getByRole('link', { name: 'Estoque' }).first().tap()
   await expect(page).toHaveURL(/\/estoque/)
   await expect(page.getByRole('heading', { name: 'Estoque e almoxarifado' })).toBeVisible()
   await page.getByRole('link', { name: 'Mapa' }).tap()
   await expect(page.locator('.leaflet-container')).toBeVisible()
+})
+
+test('celular: marketplace acessível pela barra inferior, com anúncios demonstrativos', async ({ page }) => {
+  // B não é o anunciante dos demonstrativos (vê o aviso em vez do contato)
+  await login(page, B)
+  const nav = page.getByRole('navigation', { name: 'Navegação rápida' })
+  await nav.getByRole('link', { name: 'Marketplace' }).tap()
+  await expect(page).toHaveURL(/\/marketplace$/)
+  const cards = page.locator('a[href^="/marketplace/anuncio/"]')
+  await expect(cards.first()).toBeVisible()
+  await expect.poll(() => cards.count()).toBeGreaterThanOrEqual(8)
+  await expect(page.locator('img[src*="listing-media"]').first()).toBeVisible()
+  await page.screenshot({ path: 'test-results/mobile/marketplace-lista.png' })
+  await page.getByRole('button', { name: 'Colheitadeiras e plataformas' }).or(page.getByRole('button', { name: /Máquinas/ })).first().tap()
+  await expect(cards.first()).toBeVisible()
+  await cards.filter({ hasText: 'Colheitadeira John Deere S550' }).tap()
+  await expect(page.getByText('Anúncio demonstrativo: mostra como o marketplace funciona')).toBeVisible()
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), 'anúncio sem rolagem lateral').toBe(true)
+  await page.screenshot({ path: 'test-results/mobile/marketplace-anuncio.png', fullPage: true })
+  // Também pelo atalho do menu
+  await page.getByRole('button', { name: 'Menu' }).tap()
+  await page.getByRole('link', { name: 'Marketplace' }).first().tap()
+  await expect(page).toHaveURL(/\/marketplace$/)
 })

@@ -93,7 +93,7 @@ function ListingBody({ id, publicView }: { id: string; publicView?: boolean }) {
           </div>
           <Card>
             <CardHeader title="Descrição" />
-            <p className="whitespace-pre-wrap p-5 text-sm leading-relaxed">{d.description}</p>
+            <p className="whitespace-pre-wrap p-5 text-sm [overflow-wrap:anywhere] leading-relaxed">{d.description}</p>
           </Card>
           <Card>
             <CardHeader title="Características" />
@@ -121,7 +121,9 @@ function ListingBody({ id, publicView }: { id: string; publicView?: boolean }) {
               {d.show_phone && d.contact_phone && user && <a href={`tel:${d.contact_phone}`} className="mt-1 inline-flex items-center gap-1 text-brand-700 underline"><Phone className="h-4 w-4" />{d.contact_phone}</a>}
             </div>
             <div className="mt-4 flex flex-col gap-2">
-              {!user ? (
+              {d.is_demo && !mine ? (
+                <p className="rounded-lg bg-orange-50 p-3 text-sm text-orange-900">Anúncio demonstrativo: mostra como o marketplace funciona. Não está à venda e não tem um anunciante real para contato.</p>
+              ) : !user ? (
                 <Button onClick={() => navigate('/entrar', { state: { from: `/marketplace/anuncio/${id}` } })}>Entrar para falar com o anunciante</Button>
               ) : mine ? (
                 <Button variant="outline" onClick={() => navigate('/marketplace/mensagens')}>Ver mensagens do anúncio</Button>

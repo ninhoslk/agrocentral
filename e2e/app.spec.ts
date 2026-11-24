@@ -134,6 +134,12 @@ test('marketplace: anunciar, buscar, conversar e aceitar proposta (entre usuári
   await a.getByRole('button', { name: 'Aceitar' }).click()
   await expect(a.getByText(/Proposta: R\$\s140\.000,00 · aceita/)).toBeVisible()
 
+  // Limpeza: o anúncio de teste não deve ficar público no marketplace real
+  await a.goto('/marketplace/meus-anuncios')
+  const row = a.getByRole('row').filter({ hasText: title })
+  await row.getByRole('button', { name: 'Pausar' }).click()
+  await expect(row.getByRole('button', { name: 'Publicar' })).toBeVisible()
+
   await a.context().close()
   await b.context().close()
 })

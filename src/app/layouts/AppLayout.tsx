@@ -3,7 +3,7 @@ import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-do
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import * as RDialog from '@radix-ui/react-dialog'
 import {
-  Banknote, Bell, BookOpen, Building2, ChevronsLeft, ChevronsRight, FilePlus2, LayoutDashboard, ListChecks, ListPlus, LogOut, Map as MapIcon, Menu,
+  Banknote, Bell, BookOpen, Building2, ChevronsLeft, ChevronsRight, FilePlus2, LayoutDashboard, LineChart, ListChecks, ListPlus, LogOut, MessagesSquare, CloudSun, Boxes, Map as MapIcon, Menu,
   Plus, Receipt, Search, Store, User, WifiOff, X,
 } from 'lucide-react'
 import { cn } from '@/lib/cn'
@@ -169,16 +169,46 @@ function Sheet({ open, onOpenChange, title, children }: { open: boolean; onOpenC
   )
 }
 
+/** Atalhos grandes no topo do menu do celular (os destinos mais usados, inclusive o marketplace) */
+function MenuShortcuts({ onNavigate }: { onNavigate: () => void }) {
+  const { can, moduleEnabled } = useOrg()
+  const all = [
+    { to: '/marketplace', label: 'Marketplace', icon: Store, ok: moduleEnabled('marketplace') },
+    { to: '/marketplace/mensagens', label: 'Mensagens', icon: MessagesSquare, ok: moduleEnabled('marketplace') },
+    { to: '/financeiro', label: 'Financeiro', icon: Banknote, ok: moduleEnabled('finance') && can('finance') },
+    { to: '/clima', label: 'Clima', icon: CloudSun, ok: moduleEnabled('weather') && can('weather') },
+    { to: '/mercado', label: 'Mercado', icon: LineChart, ok: moduleEnabled('market') && can('market') },
+    { to: '/diario', label: 'Diário', icon: BookOpen, ok: moduleEnabled('activities') && can('activities') },
+    { to: '/tarefas', label: 'Tarefas', icon: ListChecks, ok: moduleEnabled('tasks') && can('tasks') },
+    { to: '/estoque', label: 'Estoque', icon: Boxes, ok: moduleEnabled('inventory') && can('inventory') },
+  ].filter((x) => x.ok).slice(0, 8)
+  return (
+    <ul className="grid grid-cols-4 gap-2 border-b border-line px-3 py-3" aria-label="Atalhos">
+      {all.map((x) => (
+        <li key={x.to}>
+          <NavLink to={x.to} onClick={onNavigate} end={x.to === '/marketplace'}
+            className={({ isActive }) => cn('flex min-h-[72px] flex-col items-center justify-center gap-1.5 rounded-xl text-center text-[12px] font-medium active:bg-black/5', isActive ? 'bg-brand-50 text-brand-800' : 'bg-black/[0.03] text-ink')}>
+            <x.icon className="h-6 w-6 text-brand-700" strokeWidth={1.75} aria-hidden />{x.label}
+          </NavLink>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
 function BottomBar({ onMenu, onQuick }: { onMenu: () => void; onQuick: () => void }) {
   const { can, moduleEnabled } = useOrg()
-  const third = moduleEnabled('finance') && can('finance')
-    ? { to: '/financeiro', label: 'Financeiro', icon: Banknote }
-    : { to: '/tarefas', label: 'Tarefas', icon: ListChecks }
+  // Marketplace fica sempre a um toque no celular (quando o módulo está ativo)
+  const fourth = moduleEnabled('marketplace')
+    ? { to: '/marketplace', label: 'Marketplace', icon: Store }
+    : moduleEnabled('finance') && can('finance')
+      ? { to: '/financeiro', label: 'Financeiro', icon: Banknote }
+      : { to: '/tarefas', label: 'Tarefas', icon: ListChecks }
   const items = [
     { to: '/', label: 'Início', icon: LayoutDashboard },
     { to: '/mapa', label: 'Mapa', icon: MapIcon },
     null,
-    third,
+    fourth,
   ]
   const tab = 'flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 text-[11px] font-medium [-webkit-tap-highlight-color:transparent]'
   return (
@@ -193,7 +223,7 @@ function BottomBar({ onMenu, onQuick }: { onMenu: () => void; onQuick: () => voi
           </li>
         ) : (
           <li key={i} className="flex flex-1">
-            <NavLink to={it.to} end={it.to === '/'} className={({ isActive }) => cn(tab, isActive ? 'text-brand-800' : 'text-muted')}>
+            <NavLink to={it.to} end={it.to === '/'} className={({ isActive }) => cn(tab, 'min-w-0', isActive ? 'text-brand-800' : 'text-muted')}>
               <it.icon className="h-[22px] w-[22px]" strokeWidth={1.75} aria-hidden />{it.label}
             </NavLink>
           </li>
@@ -320,6 +350,7 @@ export function AppLayout({ children }: { children?: ReactNode }) {
             <Select aria-label="Organização" value={org?.id} onChange={(e) => setOrgId(e.target.value)}>{orgs.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}</Select>
           </div>
         )}
+        <MenuShortcuts onNavigate={() => setMenuOpen(false)} />
         <Sidebar collapsed={false} large onNavigate={() => setMenuOpen(false)} />
         <p className="px-5 pb-4 text-[11px] text-muted"><Link to="/termos" className="underline">Termos</Link> · <Link to="/privacidade" className="underline">Privacidade</Link></p>
       </Sheet>
