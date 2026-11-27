@@ -1,5 +1,5 @@
 import {
-  Banknote, Bell, BookOpen, Bot, Boxes, Calculator, CloudSun, FileText, Heart, LayoutDashboard, LineChart,
+  Banknote, Bell, PiggyBank, BookOpen, Bot, Boxes, Calculator, CloudSun, FileText, Heart, LayoutDashboard, LineChart,
   ListChecks, Map, MapPinned, MessagesSquare, Plug, Radar, ScrollText, Settings, Shield, Sprout, Store, Tractor, Users, Grid3x3, Tag,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -41,6 +41,7 @@ export const NAV: NavGroup[] = [
     label: 'Gestão',
     items: [
       { label: 'Financeiro', to: '/financeiro', icon: Banknote, module: 'finance' },
+      { label: 'Orçamento', to: '/orcamento', icon: PiggyBank, module: 'budget' },
       { label: 'Estoque', to: '/estoque', icon: Boxes, module: 'inventory' },
       { label: 'Máquinas e equipamentos', to: '/maquinas', icon: Tractor, module: 'equipment' },
       { label: 'Documentos', to: '/documentos', icon: FileText, module: 'documents' },

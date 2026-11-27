@@ -68,3 +68,22 @@ e2e/            testes Playwright (desktop e iPhone)
 | Avisos oficiais | INMET | Link para o portal oficial |
 | Cotações agrícolas | CEPEA/CONAB | Não integrado (licença) — lançamento manual ou demonstrativo rotulado |
 | Satélite/NDVI | Copernicus | Fase 8 |
+
+## Orçamento rural (MICRO · MACRO · RESUMO)
+
+Rota `/orcamento` (módulo `budget`, ativável em Configurações → Organização).
+
+| Nível | O que faz |
+| --- | --- |
+| **MICRO** | Linhas de despesa e receita previstas: categoria/subcategoria, propriedade, safra, cultura, talhão, atividade, fornecedor, item de estoque, máquina, quantidade × valor unitário (total **calculado no banco**, coluna gerada), datas prevista/efetiva, pagamento, parcelas, recorrência (mensal/trimestral/anual), extraordinária, status. No desktop funciona como planilha (edição direta de quantidade e valor unitário); no celular, cartões agrupados por categoria. |
+| **MACRO** | Consolida orçado × realizado por categoria, subcategoria, safra, cultura, talhão, propriedade, atividade, tipo de despesa e mês; custo/ha por grupo; gráficos de comparação e evolução acumulada. |
+| **RESUMO** | Indicadores (orçado, realizado, a desembolsar, investimentos, receita prevista/realizada, resultado, margem, custo/ha, ponto de equilíbrio), perguntas-chave e recomendações — cada uma com a **fonte** do número; quando falta dado, o sistema diz o que preencher. |
+| **Cenários** | Conservador/realista/otimista/personalizado como ajustes percentuais (preço, produtividade, custos, categoria, investimento extra) sobre o orçamento base, mais um simulador rápido. |
+
+**Sem duplicação:** o realizado vem do Financeiro (`transactions`). Lançamentos podem apontar para a linha orçada (`transactions.budget_line_id`) — pelo botão “Registrar pagamento” no MICRO ou pelo campo “Linha do orçamento” no Financeiro.
+Exportação: Excel (abas RESUMO, Recomendações, MACRO, MICRO) e PDF executivo.
+Banco: `supabase/migrations/20261127000100_budget.sql` (tabelas `budget_lines`, `budget_scenarios`, view `budget_lines_v`, RPC `create_budget_lines`, RLS por papel/propriedade, auditoria, validações de categoria/safra/talhão). Cálculos testados em `src/lib/budget.test.ts`.
+
+### Experiência mobile
+- Barra inferior: Início · Orçamento (ou Mapa) · **+** · Marketplace/Financeiro · Menu; Mapa e Orçamento entram nos atalhos do menu.
+- Navegação MICRO/MACRO/RESUMO fixa no topo da tela no celular, totais sempre visíveis, filtros recolhíveis, tabelas viram cartões, formulários em folha inferior com total calculado ao vivo.

@@ -29,7 +29,7 @@ const PAYMENT = ['pix', 'boleto', 'transferencia', 'dinheiro', 'cartao', 'cheque
 interface Tx {
   id: string; kind: string; description: string; amount: number; due_date: string; paid_date: string | null; issue_date: string; status: string; situation: keyof typeof SITUATION
   category_name: string; category_id: string; farm_id: string | null; season_id: string | null; field_id: string | null; contact_id: string | null; account_id: string | null
-  cost_center_id: string | null; crop_id: string | null; payment_method: string | null; document_number: string | null; installment_number: number | null; installment_count: number | null
+  cost_center_id: string | null; crop_id: string | null; budget_line_id: string | null; payment_method: string | null; document_number: string | null; installment_number: number | null; installment_count: number | null
   notes: string | null; is_demo: boolean; quantity: number | null; quantity_unit: string | null
 }
 
@@ -68,7 +68,7 @@ export function FinancePage() {
   const accounts = useQuery({ queryKey: ['fin-accounts', orgId], enabled: tab === 'cadastros' || tab === 'resumo', queryFn: () => unwrap(supabase.from('financial_accounts').select('*').eq('organization_id', orgId).is('archived_at', null).order('name')) })
   const paidByAccount = useQuery({ queryKey: ['fin-account-balances', orgId], enabled: tab === 'cadastros', queryFn: () => unwrap(supabase.from('transactions').select('account_id, kind, amount').eq('organization_id', orgId).eq('status', 'pago')) })
 
-  const inval = [['transactions'], ['dashboard'], ['fin-account-balances'], ['season-txs']]
+  const inval = [['transactions'], ['dashboard'], ['fin-account-balances'], ['season-txs'], ['budget-lines'], ['budget-actuals']]
   const markPaid = useAppMutation(async (t: Tx) => unwrap(supabase.from('transactions').update({ status: 'pago', paid_date: toISODate() }).eq('id', t.id)), { invalidate: inval, success: 'Baixa registrada' })
   const cancel = useAppMutation(async (t: Tx) => unwrap(supabase.from('transactions').update({ status: 'cancelado' }).eq('id', t.id)), { invalidate: inval, success: 'Lançamento cancelado' })
   const saveAccount = useAppMutation(async (v: Record<string, unknown>) => unwrap(supabase.from('financial_accounts').insert({ ...v, organization_id: orgId } as never)), { invalidate: [['fin-accounts'], ['lk-accounts']] })
@@ -106,6 +106,8 @@ export function FinancePage() {
     { name: 'season_id', label: 'Safra', type: 'select', options: toOptions((lk.seasons.data ?? []).filter((x) => !farm || x.farm_id === farm), (x) => x.name), span: 1 },
     { name: 'field_id', label: 'Talhão', type: 'select', options: toOptions((lk.fields.data ?? []).filter((x) => !farm || x.farm_id === farm), (x) => x.name), span: 1 },
     { name: 'crop_id', label: 'Cultura', type: 'select', options: toOptions(lk.crops.data, (c) => c.name), span: 1 },
+    ...(can('budget') ? [{ name: 'budget_line_id', label: 'Linha do orçamento', type: 'select' as const, span: 2 as const, hint: 'Vincula este lançamento ao orçado (MICRO) para comparar orçado × realizado',
+      options: toOptions((lk.budgetLines.data ?? []).filter((b) => b.kind === kindOf && (!farm || !b.farm_id || b.farm_id === farm)), (b) => `${b.description} — ${formatBRL(b.total_amount)}`) }] : []),
     { name: 'cost_center_id', label: 'Centro de custo', type: 'select', options: toOptions(lk.costCenters.data, (c) => c.name), span: 1 },
     { name: 'quantity', label: 'Quantidade', type: 'number', min: 0, span: 1, hint: 'Ex.: sacas vendidas' },
     { name: 'quantity_unit', label: 'Unidade', type: 'select', options: ['sc', 'kg', 't', '@', 'L', 'un', 'ha', 'h'].map((u) => ({ value: u, label: u })), span: 1 },

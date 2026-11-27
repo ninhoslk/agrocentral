@@ -30,6 +30,7 @@ const ActivitiesPage = lz(() => import('@/modules/field-activities/ActivitiesPag
 const TasksPage = lz(() => import('@/modules/tasks/TasksPage'), 'TasksPage')
 const TeamPage = lz(() => import('@/modules/team/TeamPage'), 'TeamPage')
 const FinancePage = lz(() => import('@/modules/finance/FinancePage'), 'FinancePage')
+const BudgetPage = lz(() => import('@/modules/budget/BudgetPage'), 'BudgetPage')
 const InventoryPage = lz(() => import('@/modules/inventory/InventoryPage'), 'InventoryPage')
 const EquipmentPage = lz(() => import('@/modules/equipment/EquipmentPage'), 'EquipmentPage')
 const EquipmentDetailPage = lz(() => import('@/modules/equipment/EquipmentDetailPage'), 'EquipmentDetailPage')
@@ -124,6 +125,7 @@ export const router = createBrowserRouter([
           { path: 'tarefas', element: m('tasks', <TasksPage />) },
           { path: 'equipe', element: m('team', <TeamPage />) },
           { path: 'financeiro', element: m('finance', <FinancePage />) },
+          { path: 'orcamento', element: m('budget', <BudgetPage />) },
           { path: 'estoque', element: m('inventory', <InventoryPage />) },
           { path: 'maquinas', element: m('equipment', <EquipmentPage />) },
           { path: 'maquinas/:id', element: m('equipment', <EquipmentDetailPage />) },

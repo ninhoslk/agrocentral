@@ -70,7 +70,11 @@ export function useLookups() {
     queryKey: ['lk-locations', orgId], ...opts, enabled: opts.enabled && can('inventory'),
     queryFn: () => unwrap(supabase.from('inventory_locations').select('id, name, farm_id').eq('organization_id', orgId!).order('name')),
   })
-  return { fields, seasons, seasonFields, employees, teams, equipment, items, crops, varieties, activityTypes, categories, contacts, accounts, costCenters, locations }
+  const budgetLines = useQuery({
+    queryKey: ['lk-budget-lines', orgId], ...opts, enabled: opts.enabled && can('budget'),
+    queryFn: () => unwrap(supabase.from('budget_lines').select('id, description, kind, farm_id, season_id, total_amount, status').eq('organization_id', orgId!).is('archived_at', null).neq('status', 'cancelado').order('planned_date', { ascending: false }).limit(1000)),
+  })
+  return { budgetLines, fields, seasons, seasonFields, employees, teams, equipment, items, crops, varieties, activityTypes, categories, contacts, accounts, costCenters, locations }
 }
 
 export const toOptions = <T extends { id: string }>(rows: T[] | undefined, label: (r: T) => string): Option[] =>

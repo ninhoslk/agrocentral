@@ -14,6 +14,178 @@ export type Database = {
   }
   public: {
     Tables: {
+      budget_lines: {
+        Row: {
+          id: string
+          organization_id: string
+          farm_id: string | null
+          season_id: string | null
+          field_id: string | null
+          crop_id: string | null
+          activity_id: string | null
+          category_id: string
+          subcategory: string | null
+          contact_id: string | null
+          inventory_item_id: string | null
+          equipment_id: string | null
+          kind: string
+          expense_type: string
+          description: string
+          unit: string | null
+          quantity: number
+          unit_price: number
+          total_amount: number
+          planned_date: string
+          actual_date: string | null
+          payment_method: string | null
+          payment_terms: string | null
+          installments: number
+          recurrence: string
+          recurrence_group: string | null
+          is_extraordinary: boolean
+          status: string
+          notes: string | null
+          is_demo: boolean
+          archived_at: string | null
+          created_by: string | null
+          updated_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          organization_id: string
+          farm_id?: string | null
+          season_id?: string | null
+          field_id?: string | null
+          crop_id?: string | null
+          activity_id?: string | null
+          category_id: string
+          subcategory?: string | null
+          contact_id?: string | null
+          inventory_item_id?: string | null
+          equipment_id?: string | null
+          kind?: string
+          expense_type?: string
+          description: string
+          unit?: string | null
+          quantity?: number
+          unit_price: number
+          planned_date: string
+          actual_date?: string | null
+          payment_method?: string | null
+          payment_terms?: string | null
+          installments?: number
+          recurrence?: string
+          recurrence_group?: string | null
+          is_extraordinary?: boolean
+          status?: string
+          notes?: string | null
+          is_demo?: boolean
+          archived_at?: string | null
+          created_by?: string | null
+          updated_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          organization_id?: string
+          farm_id?: string | null
+          season_id?: string | null
+          field_id?: string | null
+          crop_id?: string | null
+          activity_id?: string | null
+          category_id?: string
+          subcategory?: string | null
+          contact_id?: string | null
+          inventory_item_id?: string | null
+          equipment_id?: string | null
+          kind?: string
+          expense_type?: string
+          description?: string
+          unit?: string | null
+          quantity?: number
+          unit_price?: number
+          planned_date?: string
+          actual_date?: string | null
+          payment_method?: string | null
+          payment_terms?: string | null
+          installments?: number
+          recurrence?: string
+          recurrence_group?: string | null
+          is_extraordinary?: boolean
+          status?: string
+          notes?: string | null
+          is_demo?: boolean
+          archived_at?: string | null
+          created_by?: string | null
+          updated_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      budget_scenarios: {
+        Row: {
+          id: string
+          organization_id: string
+          farm_id: string | null
+          season_id: string | null
+          name: string
+          kind: string
+          price_pct: number
+          yield_pct: number
+          cost_pct: number
+          category_pct: Json
+          extra_investment: number
+          notes: string | null
+          is_demo: boolean
+          created_by: string | null
+          updated_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          organization_id: string
+          farm_id?: string | null
+          season_id?: string | null
+          name: string
+          kind?: string
+          price_pct?: number
+          yield_pct?: number
+          cost_pct?: number
+          category_pct?: Json
+          extra_investment?: number
+          notes?: string | null
+          is_demo?: boolean
+          created_by?: string | null
+          updated_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          organization_id?: string
+          farm_id?: string | null
+          season_id?: string | null
+          name?: string
+          kind?: string
+          price_pct?: number
+          yield_pct?: number
+          cost_pct?: number
+          category_pct?: Json
+          extra_investment?: number
+          notes?: string | null
+          is_demo?: boolean
+          created_by?: string | null
+          updated_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       activities: {
         Row: {
           activity_type_id: string
@@ -3218,6 +3390,7 @@ export type Database = {
       }
       transactions: {
         Row: {
+          budget_line_id: string | null
           account_id: string | null
           activity_id: string | null
           amount: number
@@ -3252,6 +3425,7 @@ export type Database = {
           updated_by: string | null
         }
         Insert: {
+          budget_line_id?: string | null
           account_id?: string | null
           activity_id?: string | null
           amount: number
@@ -3286,6 +3460,7 @@ export type Database = {
           updated_by?: string | null
         }
         Update: {
+          budget_line_id?: string | null
           account_id?: string | null
           activity_id?: string | null
           amount?: number
@@ -3744,6 +3919,51 @@ export type Database = {
       }
     }
     Views: {
+      budget_lines_v: {
+        Row: {
+          id: string
+          organization_id: string
+          farm_id: string | null
+          season_id: string | null
+          field_id: string | null
+          crop_id: string | null
+          activity_id: string | null
+          category_id: string
+          subcategory: string | null
+          contact_id: string | null
+          inventory_item_id: string | null
+          equipment_id: string | null
+          kind: string
+          expense_type: string
+          description: string
+          unit: string | null
+          quantity: number
+          unit_price: number
+          total_amount: number
+          planned_date: string
+          actual_date: string | null
+          payment_method: string | null
+          payment_terms: string | null
+          installments: number
+          recurrence: string
+          recurrence_group: string | null
+          is_extraordinary: boolean
+          status: string
+          notes: string | null
+          is_demo: boolean
+          archived_at: string | null
+          created_by: string | null
+          updated_by: string | null
+          created_at: string
+          updated_at: string
+          category_name: string
+          category_slug: string | null
+          realized_amount: number
+          paid_amount: number
+          tx_count: number
+        }
+        Relationships: []
+      }
       integration_status: {
         Row: {
           at: string | null
@@ -3757,6 +3977,7 @@ export type Database = {
       }
       transactions_v: {
         Row: {
+          budget_line_id: string | null
           account_id: string | null
           activity_id: string | null
           amount: number | null
@@ -3889,6 +4110,7 @@ export type Database = {
         }
         Returns: string
       }
+      create_budget_lines: { Args: { p_rows: Json }; Returns: number }
       create_transactions: { Args: { p_rows: Json }; Returns: number }
       dashboard_summary: {
         Args: { p_farm?: string; p_org: string }

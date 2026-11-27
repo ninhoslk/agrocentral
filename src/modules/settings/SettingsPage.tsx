@@ -20,7 +20,7 @@ import { CATEGORIES } from '@/modules/notifications/NotificationsPage'
 type Tab = 'perfil' | 'organizacao' | 'usuarios' | 'preferencias' | 'alertas' | 'plano' | 'auditoria'
 const MODULES = [
   { id: 'farms', label: 'Propriedades, mapa, talhões e safras' }, { id: 'activities', label: 'Diário de campo' }, { id: 'tasks', label: 'Tarefas' },
-  { id: 'team', label: 'Equipe' }, { id: 'finance', label: 'Financeiro' }, { id: 'inventory', label: 'Estoque' }, { id: 'equipment', label: 'Máquinas' },
+  { id: 'team', label: 'Equipe' }, { id: 'finance', label: 'Financeiro' }, { id: 'budget', label: 'Orçamento' }, { id: 'inventory', label: 'Estoque' }, { id: 'equipment', label: 'Máquinas' },
   { id: 'documents', label: 'Documentos' }, { id: 'weather', label: 'Clima e alertas' }, { id: 'market', label: 'Mercado e câmbio' }, { id: 'marketplace', label: 'Marketplace' },
 ]
 const ROLE_DESC: Record<Role, string> = {

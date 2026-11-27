@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import * as RDialog from '@radix-ui/react-dialog'
 import {
   Banknote, Bell, BookOpen, Building2, ChevronsLeft, ChevronsRight, FilePlus2, LayoutDashboard, LineChart, ListChecks, ListPlus, LogOut, MessagesSquare, CloudSun, Boxes, Map as MapIcon, Menu,
-  Plus, Receipt, Search, Store, User, WifiOff, X,
+  PiggyBank, Plus, Receipt, Search, Store, User, WifiOff, X,
 } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { NAV } from '@/app/router/nav'
@@ -144,6 +144,7 @@ function FarmSelector({ className }: { className?: string }) {
 const QUICK = [
   { label: 'Registrar atividade', icon: BookOpen, to: '/diario?novo=1', module: 'activities' },
   { label: 'Adicionar despesa', icon: Receipt, to: '/financeiro?novo=despesa', module: 'finance' },
+  { label: 'Orçar despesa', icon: PiggyBank, to: '/orcamento?aba=micro&novo=despesa', module: 'budget' },
   { label: 'Criar tarefa', icon: ListPlus, to: '/tarefas?novo=1', module: 'tasks' },
   { label: 'Anexar documento', icon: FilePlus2, to: '/documentos?novo=1', module: 'documents' },
   { label: 'Cadastrar anúncio', icon: Store, to: '/marketplace/novo', module: 'marketplace' },
@@ -173,15 +174,17 @@ function Sheet({ open, onOpenChange, title, children }: { open: boolean; onOpenC
 function MenuShortcuts({ onNavigate }: { onNavigate: () => void }) {
   const { can, moduleEnabled } = useOrg()
   const all = [
+    { to: '/mapa', label: 'Mapa', icon: MapIcon, ok: moduleEnabled('farms') && can('farms') },
     { to: '/marketplace', label: 'Marketplace', icon: Store, ok: moduleEnabled('marketplace') },
     { to: '/marketplace/mensagens', label: 'Mensagens', icon: MessagesSquare, ok: moduleEnabled('marketplace') },
     { to: '/financeiro', label: 'Financeiro', icon: Banknote, ok: moduleEnabled('finance') && can('finance') },
+    { to: '/orcamento', label: 'Orçamento', icon: PiggyBank, ok: moduleEnabled('budget') && can('budget') },
     { to: '/clima', label: 'Clima', icon: CloudSun, ok: moduleEnabled('weather') && can('weather') },
     { to: '/mercado', label: 'Mercado', icon: LineChart, ok: moduleEnabled('market') && can('market') },
     { to: '/diario', label: 'Diário', icon: BookOpen, ok: moduleEnabled('activities') && can('activities') },
     { to: '/tarefas', label: 'Tarefas', icon: ListChecks, ok: moduleEnabled('tasks') && can('tasks') },
     { to: '/estoque', label: 'Estoque', icon: Boxes, ok: moduleEnabled('inventory') && can('inventory') },
-  ].filter((x) => x.ok).slice(0, 8)
+  ].filter((x) => x.ok).slice(0, 12)
   return (
     <ul className="grid grid-cols-4 gap-2 border-b border-line px-3 py-3" aria-label="Atalhos">
       {all.map((x) => (
@@ -204,9 +207,13 @@ function BottomBar({ onMenu, onQuick }: { onMenu: () => void; onQuick: () => voi
     : moduleEnabled('finance') && can('finance')
       ? { to: '/financeiro', label: 'Financeiro', icon: Banknote }
       : { to: '/tarefas', label: 'Tarefas', icon: ListChecks }
+  // Segundo atalho: orçamento (planejamento do dia a dia) quando disponível; senão o mapa
+  const second = moduleEnabled('budget') && can('budget')
+    ? { to: '/orcamento', label: 'Orçamento', icon: PiggyBank }
+    : { to: '/mapa', label: 'Mapa', icon: MapIcon }
   const items = [
     { to: '/', label: 'Início', icon: LayoutDashboard },
-    { to: '/mapa', label: 'Mapa', icon: MapIcon },
+    second,
     null,
     fourth,
   ]

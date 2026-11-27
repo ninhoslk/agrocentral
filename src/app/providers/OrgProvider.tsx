@@ -32,6 +32,7 @@ export interface FarmSummary {
   longitude: number | null
   is_demo: boolean
   total_area_ha: number | null
+  productive_area_ha: number | null
 }
 
 interface OrgCtx {
@@ -108,7 +109,7 @@ export function OrgProvider({ children }: { children: ReactNode }) {
     queryKey: ['farms-lite', org?.id],
     enabled: !!org?.id,
     queryFn: () => unwrap(
-      supabase.from('farms').select('id, name, city, state, latitude, longitude, is_demo, total_area_ha')
+      supabase.from('farms').select('id, name, city, state, latitude, longitude, is_demo, total_area_ha, productive_area_ha')
         .eq('organization_id', org!.id).is('archived_at', null).order('name'),
     ),
   })

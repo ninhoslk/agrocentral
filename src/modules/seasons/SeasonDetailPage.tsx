@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { Pencil, Plus, Trash2, Wheat } from 'lucide-react'
+import { Pencil, PiggyBank, Plus, Trash2, Wheat } from 'lucide-react'
 import { supabase } from '@/services/supabase/client'
 import { unwrap, useAppMutation } from '@/services/supabase/query'
 import { useCurrentOrg } from '@/app/providers/OrgProvider'
@@ -20,7 +20,7 @@ type Tab = 'talhoes' | 'colheitas' | 'atividades' | 'resultado'
 
 export function SeasonDetailPage() {
   const { id = '' } = useParams()
-  const { orgId, farms, can } = useCurrentOrg()
+  const { orgId, farms, can, moduleEnabled } = useCurrentOrg()
   const lk = useLookups()
   const [tab, setTab] = useState<Tab>('talhoes')
   const [edit, setEdit] = useState(false)
@@ -129,11 +129,14 @@ export function SeasonDetailPage() {
       <PageHeader title={s.name} badge={<><Badge tone={st.tone}>{st.label}</Badge>{s.is_demo && <DataStateBadge state="demo" />}</>}
         crumbs={[{ label: 'Minha fazenda' }, { label: 'Safras', to: '/safras' }, { label: s.name }]}
         description={`${crop?.name} · ${(s.farms as { name: string } | null)?.name} · ${formatDate(s.start_date)} – ${formatDate(s.end_date)}`}
-        actions={can('seasons', 'edit') && <>
+        actions={<>
+          {moduleEnabled('budget') && can('budget') && <Link to={`/orcamento?safra=${s.id}&aba=resumo`}><Button variant="secondary"><PiggyBank className="h-4 w-4" />Orçamento da safra</Button></Link>}
+          {can('seasons', 'edit') && <>
           <Dropdown trigger={<Button variant="outline">Alterar status</Button>}
             items={(SEASON_TRANSITIONS[s.status] ?? []).map((to) => ({ label: SEASON_STATUS[to].label, onSelect: () => update.mutate({ status: to }) }))} />
           <Button variant="outline" onClick={() => setVarietyOpen(true)}>Variedades</Button>
           <Button variant="outline" onClick={() => setEdit(true)}><Pencil className="h-4 w-4" />Editar</Button>
+          </>}
         </>} />
 
       <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-5">
